@@ -69,8 +69,16 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
 	 * En este caso declaramos que va a haber balances de nuestros usuarios y que estos van
 	 * a ser manejados como un 'mapping', lo cual significa que serán almacenados como un 
 	 * 'diccionario' solo que en lugar de tener palabras aparejadas de su definición, tendremos
-	 * direcciones aparejadas de su balances numéricos (esto es lo que significa address => uint256)
+	 * direcciones aparejadas de sus balances numéricos (esto es lo que significa address => uint256).
 	 *
+	 * Declaramos otro diccionario llamado allowances para almacenar autorizaciones para la
+	 * transferencia del balance de un usuario por parte de otra dirección designada.
+	 *
+	 * Declaramos que tendremos un suministro total y que este será un valor numérico.
+	 *
+	 * Declaramos que el token tendrá un nombre y que este será una o más palabras.
+	 *
+	 * Declaramos que el token tendrá un símbolo que este será una o más palabras.
 	 *
 	 **/
     mapping(address => uint256) private _balances;
@@ -83,13 +91,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     string private _symbol;
 
     /**
-     * @dev Sets the values for {name} and {symbol}.
+     * Lo que ves a continuación es una función especial que se ejecuta antes que todas las
+     * demás, aquí se realizan operaciones indispensables para efecto de que el contrato sea
+     * utilizado. En este caso asigna el nombre y el símbolo del token que tú elijas. Ojo,
+     * esto se realiza al momento del despliegue y después no es posible modificarlos.
      *
-     * The default value of {decimals} is 18. To select a different value for
-     * {decimals} you should overload it.
-     *
-     * All two of these values are immutable: they can only be set once during
-     * construction.
      */
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
@@ -97,58 +103,69 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Returns the name of the token.
+     * Función informativa que provee el nombre del token a quien lo solicite.
+	 * Es 'public' para que cualquiera pueda llamarla.
+	 * Es 'view' porque solo permite ver información pero no hace alteración alguna.
+	 * Es 'virtual' y 'override' porque tiene una interfaz llamada IERC20 que tiene
+	 * exactamente las mismas funciones solo que están vacias, por lo que le indicamos
+	 * que esta es la que debe utilizar. La interfaz sirve para que veamos que podemos
+	 * hacer con un contrato y qué resultado debemos esperar, pero aquí construimos la
+	 * forma en lo que lo va a lograr. 1. declaramos el nombre, 2. exigimos que era un
+	 * requisito esencial que se asignara desde el comienzo y 3. se lo mostramos al usuario.
+	 *
+	 * Nota como iniciamos dandole nombre a la función y terminamos diciendo cuál es el
+	 * resultado (en este caso una palabra por eso 'string')
      */
     function name() public view virtual override returns (string memory) {
         return _name;
     }
 
     /**
-     * @dev Returns the symbol of the token, usually a shorter version of the
-     * name.
+     * Aplican mismos comentarios a la función name() solo que en este caso la 
+	 * función nos muestra el símbolo asignado al token.
      */
     function symbol() public view virtual override returns (string memory) {
         return _symbol;
     }
 
     /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5.05` (`505 / 10 ** 2`).
+     * Los tokens no pueden fraccionarse de la misma forma en que lo hace el Ether,
+     * razón por la cual debemos definir artificialmente cuanto es posible que sea
+     * fraccionado, el estandar es 18 decimales, imitando la relación Ether/Wei. 
      *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei. This is the value {ERC20} uses, unless this function is
-     * overridden;
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * {IERC20-balanceOf} and {IERC20-transfer}.
+     * Si deseas moficar los decimales, se puede hacer a su vez un override en el
+     * contrato principal para que sea el número que desees, por ejemplo, definir
+     * 5 decimales significa que para mandar 10 tokens ingresaríamos en el contrato
+     * 1000000, puesto que 1000000/10**5 = 10. 
+     * 
+     * Esta función es informativa y nos muestra el estandar de 18 decimales.
+     * Esto implica que hacemos la operación (tokens solicitados) * (10**18)
+	 * y esa operación la hacemos en la interfaz (frontend).
      */
     function decimals() public view virtual override returns (uint8) {
         return 18;
     }
 
     /**
-     * @dev See {IERC20-totalSupply}.
+     * Función informativa que nos muestra el suministro total del token.
      */
     function totalSupply() public view virtual override returns (uint256) {
         return _totalSupply;
     }
 
     /**
-     * @dev See {IERC20-balanceOf}.
+     * Función informativa, le indicamos una dirección y nos informa de su balance.
      */
     function balanceOf(address account) public view virtual override returns (uint256) {
         return _balances[account];
     }
 
     /**
-     * @dev See {IERC20-transfer}.
-     *
-     * Requirements:
-     *
-     * - `to` cannot be the zero address.
-     * - the caller must have a balance of at least `amount`.
+     * Esta es la función que vamos a usar para transferir fondos, aunque como podrás darte
+     * cuenta no lo hace por sí misma, sino que llama a otra función interna llamada _transfer
+     * que en última instancia es la que verdaderamente hace la transferencia.
+     * Nos solicita que le digamos la dirección y el monto que vamos a transferir, asignando
+	 * automaticamente como propietario de los tokes a quien llama la función.
      */
     function transfer(address to, uint256 amount) public virtual override returns (bool) {
         address owner = _msgSender();
@@ -157,7 +174,8 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev See {IERC20-allowance}.
+     * Esta es una función informativa que nos muestra dado una dirección, que otras direcciones
+	 * ha autorizado para que gasten su balance.
      */
     function allowance(address owner, address spender) public view virtual override returns (uint256) {
         return_allowances[owner][spender];
