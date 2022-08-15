@@ -195,20 +195,16 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev See {IERC20-transferFrom}.
+     * 
+     * Esta función se utiliza después de haber aprobado a otra dirección para efecto de que 
+     * utilice nuestro balance. Es requisito indicar la dirección de la que gastaremos el balance,
+     * la dirección a la que deseamos enviarlo y la cantidad de tokens. Nota como directamente 
+     * asigna a la dirección que la llama como la autorizada a gastar el balance.
+     * 
+     * Nuevamente estamos ante un caso en el que la función no realiza el gasto sobre el balance
+     * ajeno, ni la transferencia de los tokens sino que delega dichas funciones a otras dos
+     * funciones internas, una actualiza el balance de acuerdo a lo gastado y la otra transfiere.
      *
-     * Emits an {Approval} event indicating the updated allowance. This is not
-     * required by the EIP. See the note at the beginning of {ERC20}.
-     *
-     * NOTE: Does not update the allowance if the current allowance
-     * is the maximum `uint256`.
-     *
-     * Requirements:
-     *
-     * - `from` and `to` cannot be the zero address.
-     * - `from` must have a balance of at least `amount`.
-     * - the caller must have allowance for ``from``'s tokens of at least
-     * `amount`.
      */
     function transferFrom(
         address from,
@@ -222,7 +218,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Atomically increases the allowance granted to `spender` by the caller.
+     * Esta función no forma parte del estandar ERC20
      *
      * This is an alternative to {approve} that can be used as a mitigation for
      * problems described in {IERC20-approve}.
