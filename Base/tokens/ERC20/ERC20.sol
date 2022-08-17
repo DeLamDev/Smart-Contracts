@@ -356,8 +356,8 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * El requisito es que no puede ser la dirección 0 y que tiene que tener suficiente
      * en su balance para satisfacer la cantidad que se desea destruir.
      * 
-	 * La única diferencia con _mint es que en este caso solicitado el balance de la
-	 * dirección para efecto de verificar que tenga menos o igual que la cantidad que 
+	 * La única diferencia con _mint es que en este caso, solicita el balance de la
+	 * dirección, para efecto de verificar que tenga menos o igual que la cantidad que 
 	 * se desea destruir y posteriormente le resta dicha cantidad a su balance y al 
 	 * suministro total.
      */
@@ -380,17 +380,20 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Sets `amount` as the allowance of `spender` over the `owner` s tokens.
-     *
-     * This internal function is equivalent to `approve`, and can be used to
-     * e.g. set automatic allowances for certain subsystems, etc.
-     *
-     * Emits an {Approval} event.
-     *
-     * Requirements:
-     *
-     * - `owner` cannot sbe the zero address.
-     * - `spender` cannot be the zero address.
+     * Función para que propietario autorice a otra dirección para que gaste una
+     * determinada cantidad de sus tokens.
+     * 
+     * Nos solicita que le digamos, propietario, autorizado y la cantidad. Recordando
+     * que la función 'transferFrom' automaticamente asigna como autorizado a quien la
+     * llama, por lo que en realidad solo hay que indicar propietario y el monto.
+     *  
+     * Los requisitos son que tanto propietario como autorizado no pueden ser la dirección 
+     * cero.
+     * 
+     * Actualizamos nuestro diccionario de autorizaciones indicando a que dirección autorizó
+	 * el propietario y el monto.
+	 * 
+	 * Emite el evento de autorización, que notifica el dueño, autorizado y monto.
      */
     function _approve(
         address owner,
@@ -405,12 +408,15 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Updates `owner` s allowance for `spender` based on spent `amount`.
-     *
-     * Does not update the allowance amount in case of infinite allowance.
-     * Revert if not enough allowance is available.
-     *
-     * Might emit an {Approval} event.
+     * Esta es la función que se encarga de hacer la verificación de que se tenga
+     * autizados fondos suficientes para lo que se desea gastar.
+     * 
+     * Tiene una protección para efecto de que no se haga una autorización "infinita"
+     * lo que podrás observar dentro del parentesis del 'if'.
+     * 
+	 * Es interesante como la actualización de la autorización se hace nuevamente
+	 * llamando a '_approve' pero con la cantidad restada de la autorización anterior
+	 * a lo que se va a gastar.
      */
     function _spendAllowance(
         address owner,
@@ -427,18 +433,19 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Hook that is called before any transfer of tokens. This includes
-     * minting and burning.
-     *
-     * Calling conditions:
-     *
-     * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
-     * will be transferred to `to`.
-     * - when `from` is zero, `amount` tokens will be minted for `to`.
-     * - when `to` is zero, `amount` of ``from``'s tokens will be burned.
-     * - `from` and `to` are never both zero.
-     *
-     * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
+     * Esta función se utiliza para cualquier mecanismo que quieras implentar en el token
+     * al momento de cualquier transferencia que se de, al igual que emisión o destrucción
+     * de tokens. No forma parte del estandar ERC20 y OpenZeppelin las ha denominado como 
+	 * 'hooks'. En el Readme.md explico que requisitos nos solicita OpenZeppelin para su
+     * utilización. Aunque como está podemos observar que no tiene contenido alguno.
+	 * 
+	 * Tiene requisitos como los son que:
+     * - Al ser la dirección del propietario y destinatario distintas a la cero, se transferirá
+     * la cantidad de tokens solicitados al destinatario.
+     * - Si la dirección del propietario es la cero, habrá una emisión de tokens al destinatario.
+     * - Si la dirección del destinatario es la cero, habrá una destrucción de tokens del
+     * destinatario.
+     * - Nunca pueden ser la dirección cero ambas direcciones.
      */
     function _beforeTokenTransfer(
         address from,
@@ -447,18 +454,13 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {}
 
     /**
-     * @dev Hook that is called after any transfer of tokens. This includes
-     * minting and burning.
+     * Aplican los mismos comentarios hechos a propósito de '_beforeTokenTransfer'. 
      *
-     * Calling conditions:
-     *
-     * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
-     * has been transferred to `to`.
-     * - when `from` is zero, `amount` tokens have been minted for `to`.
-     * - when `to` is zero, `amount` of ``from``'s tokens have been burned.
-     * - `from` and `to` are never both zero.
-     *
-     * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
+     * La diferencia estriba en que el objetivo de esta función es implementar cualquier
+     * tipo de funcionalidad con posterioridad a la transmisión, emisión o destrucción de
+     * tokens. Quedando a discrecionalidad del desarrollador implementar el comportamiento
+     * que desee.
+     * 
      */
     function _afterTokenTransfer(
         address from,
