@@ -11,7 +11,7 @@ pragma solidity ^0.8.0;
 // Aqui importamos la interfaz del contrato, puedes pensarlo como los
 // "botones" de tu contrato, es decir con lo que va a interactuar el 
 // usuario, mi recomendación siempre que quieras analizar un contrato
-// es empezar por la interfaz si es que la tiene.
+// es empezar estudiando la interfaz si es que la tiene.
 
 import "./IERC20.sol";
 
@@ -22,14 +22,14 @@ import "./IERC20.sol";
 import "./extensions/IERC20Metadata.sol";
 
 // Este es un modulo enfocado en darle seguridad al contrato, específicamente
-// para el maneja de direcciones a las cuales se transferirán fondos.
+// para el manejo de direcciones y de las datos enviados al contrato.
 
 import "../../utils/Context.sol";
 
 /**
  * Cuando veas este contrato, recuerda que lo que estás viendo
  * es el fundamento sobre el que vas a construir tu token, pero
- * no el token en sí mismo. En la carpeta de experimento podrás
+ * no el token en sí mismo. En la carpeta de experimentos podrás
  * encontrar una implementación del mismo, la cual si podrás modificar
  * para efecto de crear tu propio token.
  *
@@ -40,7 +40,7 @@ import "../../utils/Context.sol";
  * estandar.
  * 
  * Recuerda que para entender la estructura y las acciones que realiza
- * en un esquema conceptual lo podrás encontrar en el README.md, el 
+ * conceptualmente, podrás encontrar una explicación en el README.md, el 
  * propósito de estos comentarios es que entiendas exactamente que hace
  * cada línea de código.
  *
@@ -49,7 +49,7 @@ import "../../utils/Context.sol";
  * abierto, así como a hacer auditorías de ciberseguridad. La razón por 
  * la que elegí hacer el análisis de estos en específico es porque son 
  * los más usados en la industria, además de contar con auditorías de 
- * seguridad por lo que podrás usarlos con un mayor grado de confianza.
+ * seguridad, por lo que podrás usarlos con un mayor grado de confianza.
  *
  *
  */
@@ -57,7 +57,7 @@ import "../../utils/Context.sol";
 // Siempre comenzamos el programa con la palabra 'contract' seguido del
 // nombre que le damos al contrato, en este caso 'ERC20', a continuación
 // indicamos que va a heredar funcionalidades de otros contratos, particularmente
-// de 'Context', IERC20 y IERC20Metadata. Fijate que son los mismos que importamos 
+// de Context, IERC20 y IERC20Metadata. Notese, que son los mismos que se importan 
 // arriba.
 
 contract ERC20 is Context, IERC20, IERC20Metadata {
@@ -108,13 +108,13 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
 	 * Es 'view' porque solo permite ver información pero no hace alteración alguna.
 	 * Es 'virtual' y 'override' porque tiene una interfaz llamada IERC20 que tiene
 	 * exactamente las mismas funciones solo que están vacias, por lo que le indicamos
-	 * que esta es la que debe utilizar. La interfaz sirve para que veamos que podemos
+	 * que esta es la que debe utilizar. La interfaz sirve para que veamos qué podemos
 	 * hacer con un contrato y qué resultado debemos esperar, pero aquí construimos la
 	 * forma en lo que lo va a lograr. 1. declaramos el nombre, 2. exigimos que era un
 	 * requisito esencial que se asignara desde el comienzo y 3. se lo mostramos al usuario.
 	 *
-	 * Nota como iniciamos dandole nombre a la función y terminamos diciendo cuál es el
-	 * resultado (en este caso una palabra por eso 'string')
+	 * Nota como iniciamos dandole nombre a la función y terminamos (con 'returns') diciendo
+	 * cuál es el resultado (en este caso una palabra por eso 'string').
      */
     function name() public view virtual override returns (string memory) {
         return _name;
@@ -184,9 +184,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     /**
      * 
      * Para esta función aplican los mismos comentarios a propósito de la función
-     * 'transfer'. El propósito de esta función es que el usuario pueda aprovar a 
-     * otro para que gaste su balance.
-     * 
+     * 'transfer'. El propósito de esta función es que el usuario pueda aprobar a 
+     * otra dirección para que gaste su balance, recordemos que podrá ser otro contrato
+     * o usuario. Igualmente notese que la aprovación en realidad se lleva a cabo por
+	 * otra función llamada _approve.
      */
     function approve(address spender, uint256 amount) public virtual override returns (bool) {
         address owner = _msgSender();
@@ -202,7 +203,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * asigna a la dirección que la llama como la autorizada a gastar el balance.
      * 
      * Nuevamente estamos ante un caso en el que la función no realiza el gasto sobre el balance
-     * ajeno, ni la transferencia de los tokens sino que delega dichas funciones a otras dos
+     * ajeno, ni la transferencia de los tokens, sino que delega dichas funciones a otras dos
      * funciones internas, una actualiza el balance de acuerdo a lo gastado y la otra transfiere.
      *
      */
@@ -218,16 +219,19 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * Esta función no forma parte del estandar ERC20
-     *
-     * This is an alternative to {approve} that can be used as a mitigation for
-     * problems described in {IERC20-approve}.
-     *
-     * Emits an {Approval} event indicating the updated allowance.
-     *
-     * Requirements:
-     *
-     * - `spender` cannot be the zero address.
+     * Esta función no forma parte del estandar ERC20. Los desarrolladores la incluyeron
+     * como una de las potenciales soluciones a vulnerabilidades que se pueden dar a usar
+     * la función de aprobación. Debido a esto es que es siempre recomendable usar esta
+     * cuando se desee incrementar el monto autorizado, así como a su contraparte para
+     * efecto de reducirlo.
+     * 
+     * En realidad la función lo único que hace es usar la función interna de _approve 
+     * pero usando como argumentos al dueño (quer por defecto siempre es quien llama a
+	 * a la función), la dirección autorizada y el monto (que se obtiene a través de la
+	 * suma entre lo autorizado previamente y el monto indicado).
+     * 
+     * Favor de consultar el Readme.md para efecto de entender en qué consiste la
+	 * vulnerabilidad que mitiga.
      */
     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
         address owner = _msgSender();
@@ -236,18 +240,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Atomically decreases the allowance granted to `spender` by the caller.
-     *
-     * This is an alternative to {approve} that can be used as a mitigation for
-     * problems described in {IERC20-approve}.
-     *
-     * Emits an {Approval} event indicating the updated allowance.
-     *
-     * Requirements:
-     *
-     * - `spender` cannot be the zero address.
-     * - `spender` must have allowance for the caller of at least
-     * `subtractedValue`.
+     * 
+     * En este caso aplican los mismos comentarios realizados a propósito de la función
+	 * función anterior. Solamente que en este caso se obtiene el monto a partir de la resta
+	 * de la autización anterior y el monto solicitado.
      */
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
         address owner = _msgSender();
@@ -261,18 +257,40 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Moves `amount` of tokens from `from` to `to`.
-     *
-     * This internal function is equivalent to {transfer}, and can be used to
-     * e.g. implement automatic token fees, slashing mechanisms, etc.
-     *
-     * Emits a {Transfer} event.
-     *
-     * Requirements:
-     *
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     * - `from` must have a balance of at least `amount`.
+     * Aquí se encuentra el verdadero mecanismo para la transferencia de los tokens,
+     * primero, vemos que se trata de una función de tipo internal, lo que implica
+     * que solo la pueden llamar otras funciones dentro del contrato, pero no sujetos
+     * externos. Para eso tenemos dos funciones que la llaman y le dan los argumentos
+     * que solicita: Quién transfiere, a quién le transfiere y cuánto tranfiere. Se 
+     * trata de 'transfer' y 'transferFrom'. En el primer caso asume que quien tranfiere
+     * es quien llama la función, mientras que en el segundo nos permite elegir ambos,
+	 * solo que antes tiene el control de otra función que se asegura de que esté facultado
+	 * para hacerlo (_spendAllowance).
+     * Después observamos que tiene dos requisitos, que tanto la dirección que transfiere
+     * y la que recive no sean la dirección 0 (esta es una dirección que nadie tiene y 
+	 * generalmente se ocupa para quemar tokens). 
+	 * 
+     * La función '_beforeTokenTransfer' se usa para añadir funcionalidades al token,
+     * pero en este caso no hace nada puesto que se deja a discreción de quien crea un
+     * token el innovar en las funcionalidades que quiere añadir.
+	 *
+	 * Posteriormente, se guarda en una variable llamada fromBalance, el balance de quien
+	 * transfiere, para luego hacer la verificación de que cuenta con los fondos suficientes
+	 * para hacer la transferencia del monto solicitado.
+	 *
+	 * La palabra 'unchecked' se usa para efectos de hacer más eficiente el contrato, puesto
+	 * que Solidity deja de hacer la verificación de un posible over/underflow, y eso hace
+	 * que utilice menos gas.
+	 * 
+	 * Las operaciones que se llevan a cabo son una resta, para actualizar el balance de la
+	 * dirección que transmite y una suma para la dirección que recibe.
+	 * 
+	 * La palabra 'emit' se usa para activar un evento, su propósito es completamente informativo,
+	 * de esta forma cada vez que haya una transferencia de produce esta notifiación, informando
+	 * sobre la dirección desde la que se transfirió, el destinatario y el monto.
+	 * 
+	 * La función '_afterTokenTransfer' en este caso no hace nada pero igualmente puede añadir,
+	 * funcionalidades al token.
      */
     function _transfer(
         address from,
@@ -288,8 +306,6 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
         unchecked {
             _balances[from] = fromBalance - amount;
-            // Overflow not possible: the sum of all balances is capped by totalSupply, and the sum is preserved by
-            // decrementing then incrementing.
             _balances[to] += amount;
         }
 
@@ -298,14 +314,23 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         _afterTokenTransfer(from, to, amount);
     }
 
-    /** @dev Creates `amount` tokens and assigns them to `account`, increasing
-     * the total supply.
-     *
-     * Emits a {Transfer} event with `from` set to the zero address.
-     *
-     * Requirements:
-     *
-     * - `account` cannot be the zero address.
+    /** 
+     * Esta función establece un mecanismo básico para la emisión del token,
+     * aunque dependiendo del tipo de proyecto tendrá una implementación  
+     * diferente. Solo debemos darle la dirección a la que emitiremos y la
+     * cantidad.
+     * La única condición es que no se puede emitir a la dirección cero.
+     * Nuevamente estamos en posibilidad de añadir funcionalidad a través
+     * de la función '_beforeTokenTransfer' aunque de momento no hace nada.
+	 * 
+	 * Primero actualizamos el suministro total y después el balance de la
+	 * dirección a la que emitimos.
+	 *
+	 * Emitimos la misma notificación de transferencia, solo nota como al ser
+	 * tokens sin dueño previo, se utiliza la dirección cero la que hizo la
+	 * transferencia, aunque recuerda que esto es meramente informativo.
+	 *
+	 * Misma situación de '_afterTokenTransfer', en este caso no hace nada.
      */
     function _mint(address account, uint256 amount) internal virtual {
         require(account != address(0), "ERC20: mint to the zero address");
@@ -314,7 +339,6 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
 
         _totalSupply += amount;
         unchecked {
-            // Overflow not possible: balance + amount is at most totalSupply + amount, which is checked above.
             _balances[account] += amount;
         }
         emit Transfer(address(0), account, amount);
@@ -323,15 +347,19 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     }
 
     /**
-     * @dev Destroys `amount` tokens from `account`, reducing the
-     * total supply.
-     *
-     * Emits a {Transfer} event with `to` set to the zero address.
-     *
-     * Requirements:
-     *
-     * - `account` cannot be the zero address.
-     * - `account` must have at least `amount` tokens.
+     * Esta sería la función inversa a _mint, puesto que 'quema' o destruye el
+     * suministro. Nota como nos solicita exclusivamente la dirección de cuyo
+     * balance destruiremos una determinada cantidad de tokens.
+     * Nuevamente hay que considerar que no forma parte del estandar ERC20 y que
+     * no tiene implementación, el creador del token debe definirlo.
+     * 
+     * El requisito es que no puede ser la dirección 0 y que tiene que tener suficiente
+     * en su balance para satisfacer la cantidad que se desea destruir.
+     * 
+	 * La única diferencia con _mint es que en este caso solicitado el balance de la
+	 * dirección para efecto de verificar que tenga menos o igual que la cantidad que 
+	 * se desea destruir y posteriormente le resta dicha cantidad a su balance y al 
+	 * suministro total.
      */
     function _burn(address account, uint256 amount) internal virtual {
         require(account != address(0), "ERC20: burn from the zero address");
@@ -361,7 +389,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * Requirements:
      *
-     * - `owner` cannot be the zero address.
+     * - `owner` cannot sbe the zero address.
      * - `spender` cannot be the zero address.
      */
     function _approve(
