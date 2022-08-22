@@ -1,6 +1,6 @@
-#Tokens ERC20
+# Tokens ERC20
 
-##¿Qué es un token?
+## ¿Qué es un token?
 
 Un token es un tipo de contrato inteligente cuyo propósito es la creación de medios de intercambio no distingibles entre sí y que estén dotados de una transmisibilidad, pudiendo ser representativos de activos virtuales o físicos, así como incorporar mecanismos que le otorguen determinadas funcionalidades por medio de algoritmos, especialmente en lo relativo a su emisión y suministro.
 
@@ -21,7 +21,7 @@ Estoy muy consciente de que faltan muchos elementos que discutir en esta pequeñ
 
 A su vez, quisiera dejar algo sumamente claro, especialmente para otros abogados. Me parece que los tokens son muy intuitivos para nosotros porque las transacciones con valor económico son parte esencial de la vida contractual, lo mismo ocurre cuando las usamos para representar toda clase de activos como materias primas o incluso las acciones de una sociedad. No obstante hay que ser muy cuidadosos al discutir este tipo de contratos inteligentes en foros o al pensar en la regulación que deben tener, porque no hay límite desde la óptica de los desarrolladores en cuanto a la función que quieran darle a sus tokens. Para clarificar este punto pensemos en que puede haber un token diseñado para representar las fichas de un casino digital, o un token representativo de un boleto de loteria o rifa, o uno para los programas de recompensas aparejados a las tarjetas de crédito, o para representar el progreso de un personaje en un videojuego. Notese como cada una de estas funciones tiene en principio una óptica y regulación completamente distintas, en el caso del casino y la rifa inmediatamente señalaría a la regulación de los juegos y sorteos, mientras que en lo relativo a programas de recompensas de las tarjetas de crédito prodriamos señalar la materia de derecho bancario o para el caso de que el token mismo fuera representativo de una emisión de deuda, la materia de títulos y operaciones de crédito. Lo que podemos observar es que el token en sí mismo es todo y nada, siempre tendremos que estar al caso concreto en cuanto a la función que tenga, y como vimos en el caso del videojuego, también podrían ser usado para fines completamente técnicos sin mayor relevancia jurídica.
 
-##¿En qué consiste el estandar ERC20?
+## ¿En qué consiste el estandar ERC20?
 
 Primero tenemos que entender qué es una EIP (Ethereum Improvement Proposal), para esto debemos de tener claro que Ethereum es completamente de código abrierto, cualquiera puede revisarlo, utilizarlo o modificarlo. Debido a esto se decidió establecer lineamientos para efecto de que cualquier desarrollador pudiera proponer modificaciones, mejoras o incluso innovaciones. Existen distintos tipos de EIPs, siendo uno de ellos las ERC (Ethereum request for comment), las cuales se enfocan en proponer estándares para las aplicaciones y contratos con la finalidad de promover interoperabilidad dentro del ecosistema. 
 
@@ -29,20 +29,23 @@ Una vez aclarado el punto anterior, es sencillo comprender que ERC20 (la numerac
 
 El estandar nos pide que tengamos ciertas funciones y que tengan un comportamiento, requisitos y resultado determinados.
 
-##Estructura de un token ERC20
-En cuanto a las funciones que nos pide el estandar podríamos dividirlas en funciones informativas, que alteran estado y eventos.
+## Estructura de un token ERC20
+
+En cuanto a las funciones que nos pide el estandar podríamos dividirlas en funciones informativas, que alteran estado y eventos. En la siguiente imagen podemos ver exactamente los nombres que deben tener de acuerdo al estandar ERC20.
 
 
-##Funcionamiento
 
-##Mecanismos de emisión
 
-##Hooks
+## Funcionamiento
 
-##Extensiones
+## Mecanismos de emisión
 
-##Aplicaciones en el ámbito jurídico
+## Hooks
 
-##Experimentos
+## Extensiones
 
-##Demostración de operación
+## Aplicaciones en el ámbito jurídico
+
+## Experimentos
+
+## Demostración de operación
