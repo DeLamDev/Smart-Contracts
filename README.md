@@ -1,6 +1,6 @@
-# Guía para abogados sobre Contratos Inteligentes 
+# Guía para abogados sobre Contratos Inteligentes #
 
-## Sobre este proyecto
+## Sobre este proyecto ##
 
 **Propósito**
 
@@ -32,7 +32,7 @@ Finalmente, cabe destacar que en cada uno de los contratos desplegaré un sitio 
 	- Exchange
 
 
-## Contratos Inteligentes
+## Contratos Inteligentes ##
 
 **¿Qué son?**
 
@@ -187,7 +187,7 @@ Más allá de todas las posibilidades de tokens que podrían ser almacenados pen
 
 ¿Qué ocurriría con alguien que transfiere sus activos a un contrato como este para colocarse en un estado de insolvencia? Tanto el propio sujeto como la autoridad estarían completamente imposibilitados para recuperar los fondos previo a la conclusión del término. La autoridad tendría que hacerse con las llaves privadas de la cartera del beneficiario para que transcurrido el tiempo necesario pudieran recuperar los fondos bloqueados.
 
-## Precisiones técnicas
+## Precisiones técnicas ##
 
 En esta sección me gustaría aclarar cuestiones que creo que pueden ocasionar dudas para alguien que recien se involucra con esta tecnología.
 
