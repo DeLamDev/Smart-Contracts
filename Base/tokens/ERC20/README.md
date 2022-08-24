@@ -33,7 +33,7 @@ El estandar nos pide que tengamos ciertas funciones y que tengan un comportamien
 
 En cuanto a las funciones que nos pide el estandar podríamos dividirlas en funciones informativas, que alteran estado y eventos. En la siguiente imagen podemos ver exactamente los nombres que deben tener de acuerdo al estandar ERC20, así como la categoría en la que se encuentran.
 
-![Estructura](Base/tokens/ERC20/img/ERC20.png)
+![Estructura](img/ERC20.png)
 
 
 ## Funcionamiento ##
@@ -61,7 +61,7 @@ Los hooks así como las funciones internas `_mint` y `_burn`, no están conectad
 
 Quiero recalcar la necesidad de consultar el archivo [ERC20.sol](Base/tokens/ERC20/ERC20.sol), dado que este contiene el código con mis comentarios en cada una de sus líneas para entender exactamente como se dan estos procesos, por supuesto que mis recomendación sería tener el diagrama que diseñe ya que te servira para siempre entender las relaciones que se están formando.
 
-![Función ERC20](Base/tokens/ERC20/img/Funcionamiento_token.png)
+![Función ERC20](img/Funcionamiento_token.png)
 
 ## Mecanismos de emisión ##
 
@@ -79,7 +79,9 @@ Existen básicamente tres formas de emitir el token:
 		constructor() ERC20("MiPrimerToken", "MPTK") {
 			_mint(msg.sender, 1000 * 10 ** decimals());
 		}
-	}```
+	}
+	```
+
 	Felicitaciones, con este código puedes crear tu token ERC20, solo debes modificar el nombre y símbolo (en este caso "MiPrimerToken" y "MPTK"), así como la cantidad que será emitida (en este caso son 1000 tokens).
 	Esta es la forma más básica de un token, todo lo que hemos analizado hasta ahora del contrato ERC20 es automaticamente trasladado a esta pequeña implementación tan solo con importar el estandar e indicar que hereda sus métodos con la declaración 'contract MiToken is ERC20'. Debo recalcar que lo que esto ocasiona es una emisión única, en la que quien despliegue el contrato automáticamnete tendrá todo el suminsitro y sin posibilidad de emitir tokens adicionales. 
 
@@ -101,6 +103,28 @@ Existen básicamente tres formas de emitir el token:
 	}
 	```
 	Este mecanismo es distinto al anterior dado que comenzaría el token teniendo 0 en circulación y solamente el propietario podría decidir a quien emite tokens, lo que iría aumentando el límite progresivamente. Hay en este caso una nueva importación de un contrato llamado `Ownable.sol`, este es una extensión que agrega la posibilidad de limitar funciones para que solo puedan ser llamadas por la dirección que desplegó el contrato, en la sección de extensiones explico a profundidad como funciona esta y otras disponibles.
+
+3. Modularizar el mecanismo de emisión: Esta opción es una tanto más complicada, consiste en separar el mecanismo de emisión del contrato principal, una forma de lograrlo es a través de una serie de modificaciones al token. Hay que tomar en consideración que para fines prácticos ambos contratos deben estar juntos para efecto de que se pueda crear una instancia del token, pero técnicamente lo que ocurre es que se crean dos contratos distintos.
+
+	Ejemplo:
+	```solidity
+	contract FondeoProyecto {
+		ERC20PresetMinterPauser _token;
+		address propietario;
+
+		constructor(ERC20PresetMinterPauser token) public {
+			_token = token;
+			propietario = msg.sender;
+		}
+
+		function emitirParaRecaudar() public {
+			require(msg.sender == propietario);
+			_token.mint(propietario, 1000);
+		}
+	}
+```
+
+Debo aclar que este es una modificación del ejemplo que provee OpenZeppelin para efecto de demostrar la modularización del mecanismo de emisión, solo que originalmente estaba programado de tal forma que emitiera los tokens a quien hubiera minado el último bloque al momento de llamarla. El problema que yo identifico con esa implementación es que me parece que no tiene utilidad alguna, especialmente cuando lo ponemos en contexto, ya que como podrás darte cuenta utiliza una instancia de un contrato llamado `ERC20PresetMinterPauser` que está especialmente adaptado para efecto de crear un protocolo alrededor del token que permita distribuir autorizaciones para efecto de manejar las distintas funciones del token (emitir, destruir, pausar y reanudar), es decir que se designe a una dirección para emitir o alguna otra de las funciones. En este caso este contrato es inutil a menos que se le conceda la autorización de emisión, momento a partir del cual cualquiera podría llamarla y empezar a otorgar los tokens a los mineros, solo que no hay límite en cuanto al numero de veces que se podría llamar, lo que podría ocasionar que se devaluara significativamente el token. En realidad entiendo que se trata de un ejemplo y que no hay la finalidad de pensar en las implicaciones sino de demostrar un mecanismo, soloq ue me pareción que tenía más sentido modificar el ejemplo para efecto de que se usara como un mecanismo de recaudación de fondos en el que se le concede la posibilidad al creador la posibilidad de emitir tokens cuando requiera financiación y que dicha emisión tuviera que ser aprobada por quien esté facultado para concederlas, pero sinq ue esto se tradujera en un riesgo, puesto que como puedes ver limité la posibilidad de emitir a que exclusivamente el propietario pudiera llamarla, pero dejando abierta la cantidad para efecto de que no tuviera que llamarla múltiples veces. 
 
 
 ## Hooks ##
