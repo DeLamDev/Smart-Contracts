@@ -122,16 +122,60 @@ Existen básicamente tres formas de emitir el token:
 			_token.mint(propietario, 1000);
 		}
 	}
-```
+	```
 
-Debo aclar que este es una modificación del ejemplo que provee OpenZeppelin para efecto de demostrar la modularización del mecanismo de emisión, solo que originalmente estaba programado de tal forma que emitiera los tokens a quien hubiera minado el último bloque al momento de llamarla. El problema que yo identifico con esa implementación es que me parece que no tiene utilidad alguna, especialmente cuando lo ponemos en contexto, ya que como podrás darte cuenta utiliza una instancia de un contrato llamado `ERC20PresetMinterPauser` que está especialmente adaptado para efecto de crear un protocolo alrededor del token que permita distribuir autorizaciones para efecto de manejar las distintas funciones del token (emitir, destruir, pausar y reanudar), es decir que se designe a una dirección para emitir o alguna otra de las funciones. En este caso este contrato es inutil a menos que se le conceda la autorización de emisión, momento a partir del cual cualquiera podría llamarla y empezar a otorgar los tokens a los mineros, solo que no hay límite en cuanto al numero de veces que se podría llamar, lo que podría ocasionar que se devaluara significativamente el token. En realidad entiendo que se trata de un ejemplo y que no hay la finalidad de pensar en las implicaciones sino de demostrar un mecanismo, soloq ue me pareción que tenía más sentido modificar el ejemplo para efecto de que se usara como un mecanismo de recaudación de fondos en el que se le concede la posibilidad al creador la posibilidad de emitir tokens cuando requiera financiación y que dicha emisión tuviera que ser aprobada por quien esté facultado para concederlas, pero sinq ue esto se tradujera en un riesgo, puesto que como puedes ver limité la posibilidad de emitir a que exclusivamente el propietario pudiera llamarla, pero dejando abierta la cantidad para efecto de que no tuviera que llamarla múltiples veces. 
+Debo aclarare que este es una modificación del ejemplo que provee OpenZeppelin para efecto de demostrar la modularización del mecanismo de emisión, solo que originalmente estaba programado de tal forma que emitiera los tokens a quien hubiera minado el último bloque al momento de llamarla. El problema que yo identifico con esa implementación es que me parece que no tiene utilidad alguna, especialmente cuando lo ponemos en contexto, ya que como podrás darte cuenta utiliza una instancia de un contrato llamado `ERC20PresetMinterPauser` que está especialmente adaptado para efecto de crear un protocolo alrededor del token que permita distribuir autorizaciones para efecto de manejar las distintas funciones(emitir, destruir, pausar y reanudar), es decir, que se designe a una dirección para controlar alguna de las funciones. En este caso este contrato es inutil a menos que se le conceda la autorización de emisión, momento a partir del cual cualquiera podría llamarla y empezar a otorgar los tokens a los mineros, solo que no hay límite en cuanto al numero de veces que se podría llamar, lo que podría ocasionar que se devaluara significativamente el token. En realidad entiendo que se trata de un ejemplo y que no hay la finalidad de pensar en las implicaciones, sino de demostrar un mecanismo, no obstante me pareció que tenía más sentido modificar el ejemplo para efecto de que se usara como un mecanismo de recaudación de fondos en el que se le concede la posibilidad al creador de emitir tokens cuando requiera financiación, y que dicha emisión tuviera que ser aprobada por quien esté facultado para concederlas, pero sin que esto se tradujera en un riesgo, puesto que como puedes ver fijé un límite en cuanto a la posibilidad de emitir, ya que solo el propietario puede llamarla.
 
 
 ## Hooks ##
 
+Los hooks son funciones para la implementación de mecanismos que tengan lugar en tres eventos: transferir, emitir y destruir tokens. A su vez, hay que distinguir entre `_beforeTokenTransfer` y `_afterTokenTransfer`, ya que una va a funcionar antes de que se de alguno de estos eventos, mientras que la otra antes de que terminen. Para entender como operan necesitamos abordar con mayor profundidad el tema de "multiple inheritance" (hereder de múltiples contratos), ya que esta es la base sobre la que operan los Hooks. Como podrás notar, en el contrato base `ERC20.sol`, ya se encuentran definidas ambas funciones aunque carentes de contenido. Al momento de crear nuestro token, este hereda todos los métodos del contrato base `ERC20.sol`, por lo que la unica forma de dotar de contenido a los hooks es volviendolos a declarar con la indicación de que deberán de ser ejecutados en lugar de aquellos que estan en el contrato base (nuevamente, porque estos no hacen nada), esto se logra con la indicación `override` y ahora es sencillo entender otra de las indicaciones que observarás en muchos otros contratos llamada `virtual`, que es aquella que posibilita que se haga un override. Esta es la razón por la que si deseas que otros desarrolladores puedan modificar las funciones de tu contrato lo deberás pensar desde el inicio, dado que la omisión de `virtual` impedirá dicho comportamiento en el futuro (recordemos el principio de la inmutabilidad del código). A su vez, es importante resaltar que hasta ahí solo estamos reemplazando funcionalidad, pero el objetivo de los hooks es agregar funcionalidad en distintos niveles, por lo que siempre tendremos que llamar a la función que estamos reemplazando para efecto de que no se omita el coportamiento programado en esta. La forma de lograr esto es con la indicación `super`, que llamará a la función que fue reemplazada.
 
+La forma en la que operarán será analógica a estar posicionado en la cima de una torre, el nivel más alto de la torre representa la última funcionalidad programada, y conforme se descienda de nivel iremos ejecutando las funcionalidades programadas en otros contratos de los que hereda, hasta llegar al más básico de todos que es `ERC20.sol`(sería el fundamento de la torre).
+
+En la siguiente imagen quise ilustrar como se vería esta herencia múltiple aplicada a los hooks. Los números representan el orden de ejecucción, la flecha de `override` demuestra como indicamos que el orden y as u vez, la flecha de `super`, indica el mecanismo para que se ejecuten todos los niveles anteriores. Como podrás ver, incluí en un nivel intermedio a las extensiones, esto lo explico en el siguiente apartado, pero la idea es que muchas de las funcionalidades que podrías llegar a querer implementar son comunes y por lo tanto ya han sido programadas, por lo que son buenas noticias para quien las quiera incorporar. Sin embargo, las extensiones no excluyen la posibilidad de seguir implementando funcionalidades adicionales, por esta razón es tan relevante entender el órden en que se está heredando.
+
+![Hooks](img/Hooks.png)
+
+Por último, quiero destacar que hay dos requisitos para el uso de hooks:
+1. Hacerlos con la indicación `virtual` (para que se pueda seguir agregando funcionalidad).
+2. SIEMPRE llamar al hook anterior con `super`, ya sea `super._beforeTokenTransfer(from, to, amount);` o en su caso `super._afterTokenTransfer(from, to, amount);`.
+
+En el siguiente ejemplo, implemento un hook que va a otorgar por única vez como incentivo 100 tokens a aquellos que acumulen un balance de 1000 tokens. Similar a lo que hacen algunas tarjetas de crédito/débito que otorgan una determinada cantidad a partir de un depósito o gasto por un monto determinado.
+
+```solidity
+pragma solidity ^0.8.4;
+
+import "@openzeppelin/contracts@4.7.3/token/ERC20/ERC20.sol";
+
+contract MyToken is ERC20 {
+    mapping(address => uint8) private _reg_incentivos;
+    
+    constructor() ERC20("MiToken", "MTK") {
+        _mint(msg.sender, 10000 * 10 ** decimals());
+    }
+    function _afterTokenTransfer(address from, address to, uint256 amount) 
+    internal virtual override 
+    {
+        if (_reg_incentivos[to] == 0 && balanceOf(from) >= 1000 * 10 ** decimals()) {
+            _mint(to, 100 * 10 ** decimals());
+            _reg_incentivos[to] = 1;
+        }
+        super._afterTokenTransfer(from, to, amount);
+    }
+}
+```
+Recuerda que el contrato anterior es una implementación completa de un token, con un suministro predefinido de 10000, pero con un mecanismo de incentivo/emisión que otorga 100 tokens a quienes acumulan un balance de 1000. En este caso no tengo que filtrar el comportamiento para que no se aplique a la emisión y destrucción puesto que no tiene dichas funciones programadas, pero si lo quisieras hacer solo debes poner otro filtro adicional en el `if` para que verifique si se usa la dirección cero (si se usa en 'from' es emisión y si se usa en 'to' es destrucción).
 
 ## Extensiones ##
+
+Estos son una serie de contratos que al integrarlos con tu token integran funcionalidades adicionales.
+
+- ERC20Burnable.sol: Añade dos funciones al token, una de ellas para que el propietario de los tokens pueda destruirlos `burn` y otra para que otra dirección autorizada sea la que los destruya, `burnfrom`.
+
+- ERC20Capped.sol: Este contrato sirve para definir una cantidad máxima del suministro del token, esto se hace desde la creación y a su vez sustituye el mecanismo de `_mint` para efecto de establecer como requisito que cualquier emisión verifique que no exceda el máximo fijado.
+
+- ERC20Pausable.sol: Se trata de un contrato que utiliza el hook `_beforeTokenTransfer`, para establacer como requisito de emisión, transferencia y destrucción que el contrato no se ecnuentre pausado, aunque la posibilidad de pausar y reanudar, se enceuntra programa en otro contrato llamado `Pausable.sol`.
 
 ## Aplicaciones en el ámbito jurídico ##
 
