@@ -6,13 +6,13 @@
 
 El objetivo de este proyecto es introducir al mundo de los 'Smart Contracts' o contratos inteligentes a quien se interese por este tema, desde la perspectiva de alguien que realiza sus estudios en el ámbito jurídico y que desea transmitir aquello que ha aprendido a través de la experimentación y análisis del código que los conforma. 
 
-Mi deseo es aportar valor mediante la abstracción del funcionamiento técnico de los distintos tipos de contratos inteligentes a un nivel general de entendimiento, que permita a partir de esto inciar discusiones respecto a los efectos, beneficios, potenciales o incluso riesgos que pueden representar tanto en el mundo jurídico como en otras áreas. No obstante, espero que también inspire y ocasione curiosidad por esta tecnología, especialmente para aquellos que no tienen concocimientos de informatica tanto en el sentido de haya el deseo por profundizar más en estos temas o aprender a programar creciendo así la comunidad de desarrolladores de esta tecnología, o simplemente que cause el efecto de querer incorporarla en sus respectivos trabajos, negocios o incluso en el día a día.
+Mi deseo es aportar valor mediante la abstracción del funcionamiento técnico de los distintos tipos de contratos inteligentes a un nivel general de entendimiento, que permita a partir de esto iniciar discusiones respecto a los efectos, beneficios, potenciales o incluso riesgos que pueden representar tanto en el mundo jurídico como en otras áreas. No obstante, espero que también inspire y ocasione curiosidad por esta tecnología, especialmente para aquellos que no tienen concocimientos de informatica, tanto en el sentido de que haya el deseo por profundizar más en estos temas o de aprender a programar, creciendo así la comunidad de desarrolladores de esta tecnología, o simplemente que cause el efecto de querer incorporarla en sus respectivos trabajos, negocios o incluso en el día a día.
 
-Este proyecto esta compuesto de dos partes principales, por una parte están los contratos que podríamos denominar como base, puesto que son estándares que se usan en la industria, esto implica que para analizar proyectos complejos es necesario entender estos, puesto que de una u otra forma los incorporan, a su vez esto tiene otra razón de ser puesto que al estandarizar ciertos contratos esto crea compatibilidad entre las distintas aplicaciones, protocolos o proyectos que los utilizan. Por otra parte, está la sección de proyectos, la llamo así porque aqui mi objetivo es analizar las inovaciones específicas que están haciendo distitos agentes en este espacio.
+Este proyecto esta compuesto de dos partes principales, por una parte están los contratos que podríamos denominar como base, puesto que son estándares que se usan en la industria, esto implica que para analizar proyectos complejos es necesario entender estos, puesto que de una u otra forma los incorporan, a su vez esto tiene otra razón de ser, ya que al estandarizar ciertos contratos esto crea compatibilidad entre las distintas aplicaciones, protocolos o proyectos que los utilizan. Por otra parte, está la sección de proyectos, la llamo así porque aqui mi objetivo es analizar las inovaciones específicas que están haciendo distitos agentes en este espacio.
 
 Al ingresar a cada uno de los contratos se encontrará una explicación y esquemas que permitan visualizar el funcionamiento del contrato, así como el análisis que en cada caso realice de ellos. Si bien esto sería suficiente, los invito a revisar el código de cada uno de ellos, dado que através de comentarios en el código explicaré exactamente que hace cada uno de sus componentes. 
 
-Finalmente, cabe destacar que en cada uno de los contratos desplegaré un sitio web en el que se puedan utilizar, de manera que otra forma de aprender acerca de su funcionamiento puede ser mediante la experimentación.
+Finalmente, cabe destacar que en cada uno de los contratos desplegaré un sitio web en el que se puedan utilizar, de manera que otra forma de aprender acerca de su funcionamiento pueda ser mediante la experimentación.
 
 
 **Contenidos**
@@ -20,9 +20,9 @@ Finalmente, cabe destacar que en cada uno de los contratos desplegaré un sitio 
 - Contratos Básicos
 	- Tokens
 		- [ERC 20](Base/tokens/ERC20)
-		- [ERC 721](Base/tokens/ERC721)
-		- [ERC 777](Base/tokens/ERC777)
-		- [ERC 1155](Base/tokens/ERC1155)
+		- [ERC 721](Base/tokens/ERC721) (en desarrollo)
+		- [ERC 777](Base/tokens/ERC777) (en desarrollo)
+		- [ERC 1155](Base/tokens/ERC1155) (en desarrollo)
 	- Control
 	- Governanza
 
