@@ -201,6 +201,30 @@ En el caso del estandar ERC20 podemos pensar en una enorme cantidad de aplicacio
 
 - Crowdfunding: La ventaja de ejecutar una campaña de recaudación de fondos a través de la distribución de tokens es que posteriormente podrías incorporar un mecanismo de gobernanza que permitiera la utilización de los tokens para la toma de decisiones. Piensa en la clásica campaña para recaudar fondos en respuesta a una catastrofe natural, los donantes podrían decidir, por ejemplo, si es más necesaria la compra de equipo de rescate, botiquines de primeros auxilios o alimentos. En México esta figura está regulada por la Ley para Regular las Instituciones de Tecnología Financiera, aunque hay que reconocer que no en todas las jurisdicciones existe una normativa especializada en la materia. En este caso al usar la tecnología blockchain, queda fuera de lugar dicha ley, porque justamente elimina la necesidad de tener un intermediario que nos habilite para ejecutar la campaña, además de que los derechos para la gobernanza son distribuidos directamente a los donantes.
 
+- Medios de intercambio: Una de las razones por las que es muy atractivo el uso de tokens es para incentivar a los usuarios a gastarlo dentro del ecosistema de aplicaciones del creador. Es en cierta forma similar a lo que ocurre cuando adquirimos una tarjeta de regalo de alguna empresa o billetera electrónica, solamente existe la posibilidad de utilizar los fondos correspondientes en la empresa emisora de las tarjetas o billeteras electrónicas. Es un mecanismo sumamente interesante puesto que motiva a los usuarios a continuar usando la aplicación, además de que muchos protocolos habilitan opciones adicionales para efecto de que se obtengan rendimientos sobre los tokens adquiridos. Jurídicamente es increiblemente retador entender cual es la naturaleza de este tipo de figuras, especialmente porque combinan muchos de los casos antes mencionados, pensemos en la dinámica recaudatoria que podría tener un proyecto al emitir tokens y recibir inversiones a cambio, no obstante que al ser utilizados dentro del mismo ecosistema del creador, es muy factible que estos terminen en última instancia regresando al mismo, por otra parte está la posibilidad de que esos mismos tokens formen parte de la propia gobernanza del protocolo o que directamente confieran derechos sobre determinados rendimientos del protocolo. Como ha quedado expuesto puede llegar a ser muy compleja la dinámica que habiliten los tokens. Un último ejemplo podríamos darle en el contexto de un metaverso, que tenga un token nativo que se utilice como moneda en este, pero que a su vez, pueda estar respaldado por otro tipo de activos, que le confiera determinados derechos en dicho mundo virtual o que habilite al usuario a ser participe del mismo mediante la adquisición de bienes digitales que de forma indirectame lo faculten a participar en la gobernanza.
+
+Aunque los casos anteriores son hipotéticos, siempre será necesario hacer un análisis exhaustivo de todas las dinámicas que puede habilitar un token especialmente cuando lo encontremos inmerso dentro de un ecosistema. Creo con tanta firmeza en esta declaración que incluso me atrevería a afirmar que no es posible analizar un token y su función en estos casos de forma independiente.
+
 ## Experimentos ##
 
+En esta sección voy a presentar distintas implementaciones de estos contratos y los denomino como experimentos porque mi propósito es presentar una programación novedosa que incluya los conceptos discutidos anteriormente. Esto significa que debo establecer una precaución respecto a quienes quieran hacer uso de ellos, ya que NO están auditados por institución alguna tanto en materia de seguridad como de eficiencia o cualquier otro aspecto. Estos contratos son hechos con fines educativos exclusivamente y cualquier otro uso que se haga de ellos es bajo el riesgo personal.
+
+1. Replica de Bitcoin y sus mecanismos de emisión.
+
+2. Stablecoin algoritmica.
+
+3. Mecanismo de tokenización de activos
+
+4. Token con distribución de recompensas
+
+5. Bóveda para administración del token con recompensa
+
+6. Token de gobernanza de asociación benéfica
+
+Finalmente, si deseas crear cualquier token recomiendo ampliamente la utilización de la herramienta [Wizard](https://wizard.openzeppelin.com/) de OpenZeppelin. Con ella podrás crear un token con cualquiera de las extensiones antes comentadas, a excepción de ERC20Capped, ERC4626 y ERC20Wrapper. No obstante, en el proyecto 1, 6 y 2, encontraras las implementaciones de dichas extensiones.
+
 ## Demostración de operación ##
+
+En este apartado solo voy a proveer el limk en el que podrás encontrar algunos de los experimentos anteriores, en la carpeta de muestras encontrarás todo el código de dichas aplicaciones decentralizadas. Hay dos cuestiones importantes que debes considerar, la primera sería instalar [Metamask](https://metamask.io/), en su sitio web encontrarás todas las instrucciones, a su véz, requerirás tener un poco de Ether de la Testnet Rinkeby, cosa que podrás obtener a través de un [faucet](https://rinkebyfaucet.com/).
+
+Finalmente, quisiera disculparme por anticipado ya que en estas muestras hay código de otros lenguajes de programación como JavaScript, HTML y CSS, que no tendrán comentarios explicando su funcionamiento puesto que estos caen fuera del objeto de este proyecto, a pesar de esto te invito a aprenderlos puesto que forman parte de esta tecnología.
