@@ -9,7 +9,8 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
     uint256 private _block;
     uint64 private _genesis;  
     uint32 private _halving;      
-    uint8 private _reward;        
+    uint8 private _reward;
+	uint32 private precision;
                                    
     constructor() ERC20("Bitcoin-R", "BTCR") ERC20Capped(21000000*10**decimals()) {
         _block = 0;
@@ -22,11 +23,11 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
         require(to != address(0));                 
         require(block.timestamp >= miner_calculator());
         if(_block == _halving) {    
-            _reward = (_reward / 2);                           
+            _reward = halving_calculator(_reward);                           
             _halving += 210000;                                                  
         }                                                                        
         _block += 1;                                               
-        _mint(to, (_reward * 10** decimals()));       
+        _mint(to, (_reward * 10** (decimals() - precision)));       
     }                                 
  
     function miner_calculator() public view returns(uint256) {
@@ -38,5 +39,18 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
         override(ERC20, ERC20Capped)
     {
         super._mint(to, amount);
+    }
+	
+	function block_num() public view returns(uint256) {
+        return _block;
+    }
+
+    function halving_calculator(uint32 reward) internal returns(uint32) {
+        if(_reward >= 25 && _reward != 50) {
+            precision += 1;
+            return reward*(uint32(10))/2;
+        } else {
+            return (_reward / 2);
+        }
     }
  }
