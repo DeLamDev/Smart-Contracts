@@ -9,7 +9,7 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
     uint256 private _block;
     uint64 private _genesis;  
     uint32 private _halving;      
-    uint8 private _reward;
+    uint64 private _reward;
 	uint32 private precision;
                                    
     constructor() ERC20("Bitcoin-R", "BTCR") ERC20Capped(21000000*10**decimals()) {
@@ -45,10 +45,10 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
         return _block;
     }
 
-    function halving_calculator(uint32 reward) internal returns(uint32) {
-        if(_reward >= 25 && _reward != 50) {
+    function halving_calculator(uint64 reward) internal returns(uint64) {
+        if(_reward >= 25 && _reward != 50 && precision < 18) {
             precision += 1;
-            return reward*(uint32(10))/2;
+            return reward*(uint64(10))/2;
         } else {
             return (_reward / 2);
         }
