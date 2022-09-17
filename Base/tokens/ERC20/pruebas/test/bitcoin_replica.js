@@ -13,13 +13,30 @@ describe("Bitcoin Replica Contract", function () {
 		// Nos da los valores necesarios para el resto de los tests
 		return {Token, owner, addr1, addr2, Bitcoin_Replica};
 	}
-	it("Should show 0 total supply and 0 assigned to owner", async function () {	
-		const { Bitcoin_Replica, owner } = await loadFixture(deployTokenFixture);
+	describe("Deployment", function() {
+		it("Should show 0 total supply and 0 assigned to owner", async function () {	
+			const { Bitcoin_Replica, owner } = await loadFixture(deployTokenFixture);
 
-		const ownerBalance = await Bitcoin_Replica.balanceOf(owner.address);
-		expect(await Bitcoin_Replica.totalSupply()).to.equal(ownerBalance);
+			const ownerBalance = await Bitcoin_Replica.balanceOf(owner.address);
+			expect(await Bitcoin_Replica.totalSupply()).to.equal(ownerBalance);
+		});
+
+		it("Should allow to mine the first block after deployment", async function() {
+			const { Bitcoin_Replica, owner } = await loadFixture(deployTokenFixture);
+
+			await expect(Bitcoin_Replica.mine(owner.address).to.changeTokenBalance(Bitcoin_Replica, owner, (50*10**18)));
+
+		});
+
 	});
 
-	it(":")
-})
+	describe("Transactions", function() {
+		it("Should be able to transfer mined tokens", async function() {
+			const { Bitcoin_Replica, owner, addr1 } = await loadFixture(deployTokenFixture);
+
+			await expect(Bitcoin_Replica.transfer(addr1.address, 50).to.changeTokenBalances(Bitcoin_Replica, [owner, addr1], [-50, 50]));
+		});
+	});
+	
+});
 
