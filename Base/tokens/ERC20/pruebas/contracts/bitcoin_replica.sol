@@ -3,6 +3,8 @@ pragma solidity ^0.8.4;
  
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
+
+import "hardhat/console.sol";
  
 contract Bitcoin_Replica is ERC20, ERC20Capped {
      
@@ -27,8 +29,22 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
             _halving += 210000;                                                  
         }                                                                        
         _block += 1;                                               
-        _mint(to, (_reward * 10** (decimals() - precision)));       
-    }                                 
+        _mint(to, (_reward * 10 ** (decimals() - precision)));
+		console.log("Mining block number: %s, with reward of %s, to address: %s", (_block -1), _reward, to);
+    }
+
+	function mining_test(address to) public {
+		require(to != address(0));
+		require(block.timestamp >= miner_calculator());
+		if(_block == _halving) {
+			_reward = halving_calculator(_reward);
+			_halving += 210000;
+		}
+		_block += 210000;
+		_mint(to, ((_reward * 210000) * 10 ** (decimals() - precision)));
+		console.log("Number of blocks mined: %s, with reward of %s, to address: %s.", _block, _reward, to);
+		console.log("Total supply: %s.", (totalSupply() / 10**18));
+	}
  
     function miner_calculator() public view returns(uint256) {
         return (_genesis + (10 minutes * _block));
