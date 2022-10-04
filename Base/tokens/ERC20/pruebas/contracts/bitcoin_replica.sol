@@ -12,7 +12,7 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
     uint64 private _genesis;  
     uint32 private _halving;      
     uint64 private _reward;
-	uint32 private precision;
+	uint32 private _precision;
                                    
     constructor() ERC20("Bitcoin-R", "BTCR") ERC20Capped(21000000*10**decimals()) {
         _block = 0;
@@ -29,7 +29,7 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
             _halving += 210000;                                                  
         }                                                                        
         _block += 1;                                               
-        _mint(to, (_reward * 10 ** (decimals() - precision)));
+        _mint(to, (_reward * 10 ** (decimals() - _precision)));
 		console.log("Mining block number: %s, with reward of %s, to address: %s", (_block -1), _reward, to);
     }
 
@@ -41,9 +41,9 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
 			_halving += 210000;
 		}
 		_block += 210000;
-		_mint(to, ((_reward * 210000) * 10 ** (decimals() - precision)));
+		_mint(to, ((_reward * 10 ** (decimals() - _precision)) * 210000));
 		console.log("Number of blocks mined: %s, with reward of %s, to address: %s.", _block, _reward, to);
-		console.log("Total supply: %s.", (totalSupply() / 10**18));
+		console.log("Total supply: %s and precision at: %s.", (totalSupply() / 10**18), _precision);
 	}
  
     function miner_calculator() public view returns(uint256) {
@@ -62,8 +62,8 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
     }
 
     function halving_calculator(uint64 reward) internal returns(uint64) {
-        if(_reward >= 25 && _reward != 50 && precision < 18) {
-            precision += 1;
+        if(_reward >= 25 && _reward != 50 && _precision < 18) {
+            _precision += 1;
             return reward*(uint64(10))/2;
         } else {
             return (_reward / 2);
@@ -81,4 +81,8 @@ contract Bitcoin_Replica is ERC20, ERC20Capped {
     function genesis() public view returns(uint64) {
         return _genesis;
     }
+
+	function precision() public view returns(uint32){
+		return _precision;
+	} 
  }

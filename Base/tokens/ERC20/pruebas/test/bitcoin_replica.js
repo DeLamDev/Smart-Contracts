@@ -57,11 +57,47 @@ describe("Bitcoin Replica Contract", function () {
 			const ten_min = 600;
 			let counter = initial_time;
 			while (await Bitcoin_Replica.current_reward() != 0) {
-				await expect(Bitcoin_Replica.mining_test(owner.address));
-				block = await Bitcoin_Replica.next_block();
+				await expect(Bitcoin_Replica.mining_test(owner.address)).to.emit(Bitcoin_Replica, "Transfer");
+				let reward = await Bitcoin_Replica.current_reward();
+				let precision = await Bitcoin_Replica.precision();
+				let block = await Bitcoin_Replica.next_block();
 				counter = Number(counter) + (ten_min * block);
 				await time.increaseTo(counter);
+				if (precision > 0) {
+					console.log("\x1b[33mFormated reward is: %s and real total supply of: %s \x1b[0m", (reward / 10 ** precision), (await Bitcoin_Replica.totalSupply()));
+				} else {
+					console.log("\x1b[33mFormated reward is: %s \x1b[0m", reward);
+				}
+
 			}
+		});
+	});
+
+	describe("Information of the contract", function() {
+		it("Should inform about the next block to be mined", async function() {
+			const { Bitcoin_Replica } = await loadFixture(deployTokenFixture);
+
+			expect(await Bitcoin_Replica.next_block()).to.be.equal(0);
+		});
+		it("Should inform about the current reward", async function() {
+			const { Bitcoin_Replica } = await loadFixture(deployTokenFixture);
+
+			expect(await Bitcoin_Replica.current_reward()).to.be.equal(50);
+		});
+		it("Should inform about the block at which the halving is set", async function() {
+			const { Bitcoin_Replica } = await loadFixture(deployTokenFixture);
+
+			expect(await Bitcoin_Replica.halving()).to.be.equal(210000);
+		});
+		it("Should inform about the timestamp of the genesis block", async function() {
+			const { Bitcoin_Replica } = await loadFixture(deployTokenFixture);
+
+			expect(await Bitcoin_Replica.genesis()).to.be.equal(await time.latest());
+		});
+		it("Should inform about the precision of the decimals", async function() {
+			const { Bitcoin_Replica } = await loadFixture(deployTokenFixture);
+
+			expect(await Bitcoin_Replica.precision()).to.be.equal(0);
 		})
 	});
 	
