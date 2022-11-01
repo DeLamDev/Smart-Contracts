@@ -6,14 +6,16 @@ pragma solidity ^0.8.0;
 import "../ERC20.sol";
 
 /**
- * @dev Extension of {ERC20} that adds a cap to the supply of tokens.
+ * Se trata de una extensión que fija un límite al suministro total posible
+ * del token.
  */
 abstract contract ERC20Capped is ERC20 {
     uint256 private immutable _cap;
 
     /**
-     * @dev Sets the value of the `cap`. This value is immutable, it can only be
-     * set once during construction.
+     * En el contrato base se debe fijar el límite, el cual es asignado a la
+     * variable "_cap" al momento del despliegue y posteriormente ya no es
+	 * posible modificarlo.
      */
     constructor(uint256 cap_) {
         require(cap_ > 0, "ERC20Capped: cap is 0");
@@ -21,14 +23,15 @@ abstract contract ERC20Capped is ERC20 {
     }
 
     /**
-     * @dev Returns the cap on the token's total supply.
+     * Incluye una función informativa que muestra el límite al usuario.
      */
     function cap() public view virtual returns (uint256) {
         return _cap;
     }
 
     /**
-     * @dev See {ERC20-_mint}.
+     * Hace un override de la función "_mint" de manera que agregue la verificación
+	 * de que efectivamente no se exceda el límite al momento de emitir tokens.
      */
     function _mint(address account, uint256 amount) internal virtual override {
         require(ERC20.totalSupply() + amount <= cap(), "ERC20Capped: cap exceeded");

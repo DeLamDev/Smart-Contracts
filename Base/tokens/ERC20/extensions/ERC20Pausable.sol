@@ -7,19 +7,21 @@ import "../ERC20.sol";
 import "../../../security/Pausable.sol";
 
 /**
- * @dev ERC20 token with pausable token transfers, minting and burning.
- *
- * Useful for scenarios such as preventing trades until the end of an evaluation
- * period, or having an emergency switch for freezing all token transfers in the
- * event of a large bug.
+ * Se trata de una extensión que hace uso de los hooks para efecto de poder 
+ * Limitar las operaciones de emisión, transferencia y destrucción.
+ * 
+ * Puede ser util por ejemplo para tener tiempo de evaluar algun error o
+ * actualización o inclusopara proteger a los ususarios en caso de un evento
+ * inesperado.
  */
 abstract contract ERC20Pausable is ERC20, Pausable {
     /**
-     * @dev See {ERC20-_beforeTokenTransfer}.
+     * Aqui se implementa el hook, particularmente el que opera previo a 
+     * transaccción del token. Aunque realmente solo agrega la verificación
+     * de si han o no sido pausadas las operaciones del token.
      *
-     * Requirements:
-     *
-     * - the contract must not be paused.
+     * ADVERTENCIA: se sigue teniendo que implementar la función "paused()"
+	 * en el contrato base, de lo contrario no tendrá efecto alguno.
      */
     function _beforeTokenTransfer(
         address from,

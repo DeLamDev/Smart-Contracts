@@ -7,33 +7,29 @@ import "../ERC20.sol";
 import "../../../utils/Context.sol";
 
 /**
- * @dev Extension of {ERC20} that allows token holders to destroy both their own
- * tokens and those that they have an allowance for, in a way that can be
- * recognized off-chain (via event analysis).
+ * Esta extensión ayuda a destruir/quemar una cantidad determianda del token,
+ * es posible utilizarla tanto por el propietario como por el autorizado.
  */
 abstract contract ERC20Burnable is Context, ERC20 {
     /**
-     * @dev Destroys `amount` tokens from the caller.
-     *
-     * See {ERC20-_burn}.
+     * Implementa la función 'burn' la cual lo único que hace en realidad
+     * es permitir el acceso a la función interna '_burn' programada en
+     * el contrato base.
      */
     function burn(uint256 amount) public virtual {
         _burn(_msgSender(), amount);
     }
 
     /**
-     * @dev Destroys `amount` tokens from `account`, deducting from the caller's
-     * allowance.
-     *
-     * See {ERC20-_burn} and {ERC20-allowance}.
-     *
-     * Requirements:
-     *
-     * - the caller must have allowance for ``accounts``'s tokens of at least
-     * `amount`.
+     * Misma función que la descrita anteriormente, solamente que en este
+     * caso se detruyen los tokens de un tercero por parte de quien haya
+     * autorizado para este propósito.
+     * A su vez llama a otra función que se encarga primero de actualizar
+	 * autorización que se le dió al usuario.
      */
     function burnFrom(address account, uint256 amount) public virtual {
         _spendAllowance(account, _msgSender(), amount);
         _burn(account, amount);
     }
 }
+
