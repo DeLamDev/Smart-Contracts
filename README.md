@@ -1,6 +1,19 @@
-# Guía para abogados sobre Contratos Inteligentes #
+# Guía para abogados sobre Contratos Inteligentes
 
-## Sobre este proyecto ##
+## Introducción
+
+En este trabajo encontrarás un esfuerzo por explicar con el mayor detalle y simpleza posible el funcionamiento de los contratos inteligentes, no obstante esto presupone
+el tener un entendimiento básico de la tecnología blockchain, razón por la cual recomiendo ver el siguiente video del canal de Youtube "Simply Explained" (no es de mi autoría),
+ya que me parece que hace un gran trabajo explicando este concepto.
+
+[![Video Blockchain](https://img.youtube.com/vi/SSo_EIwHSd4/maxresdefault.jpg)](https://www.youtube.com/watch?v=SSo_EIwHSd4)
+
+Asimismo dejo otro video del mismo canal pero enfocado en los contratos inteligentes como tal, creo que será muy beneficioso el verlo antes de continuar con la lectura del respecto
+de esta página, de manera que se tengan nociones del tema a tratar.
+
+[![Video Smart Contracts](https://img.youtube.com/vi/ZE2HxTmxfrI/maxresdefault.jpg)](https://www.youtube.com/watch?v=ZE2HxTmxfrI)
+
+## Sobre este proyecto
 
 **Propósito**
 
@@ -32,7 +45,7 @@ Finalmente, cabe destacar que en cada uno de los contratos desplegaré un sitio 
 	- Exchange
 
 
-## Contratos Inteligentes ##
+## Contratos Inteligentes
 
 **¿Qué son?**
 
@@ -187,7 +200,7 @@ Más allá de todas las posibilidades de tokens que podrían ser almacenados pen
 
 ¿Qué ocurriría con alguien que transfiere sus activos a un contrato como este para colocarse en un estado de insolvencia? Tanto el propio sujeto como la autoridad estarían completamente imposibilitados para recuperar los fondos previo a la conclusión del término. La autoridad tendría que hacerse con las llaves privadas de la cartera del beneficiario para que transcurrido el tiempo necesario pudieran recuperar los fondos bloqueados.
 
-## Precisiones técnicas ##
+## Precisiones técnicas
 
 En esta sección me gustaría aclarar cuestiones que creo que pueden ocasionar dudas para alguien que recien se involucra con esta tecnología.
 
